@@ -4,10 +4,9 @@ class Dashboard extends CI_Controller {
     public function __construct()
 	{
             parent::__construct();
-//            $this->load->library('session');
-//            if($this->session->userdata('sess_ci_admin_islogged') != true ) {
-//                    redirect('login_ctrl', 'refresh');
-//            }
+            if($this->session->userdata('sess_ci_admin_islogged') == 0) {
+                    redirect('login_ctrl', 'refresh');
+            }
   	}
 	
 	public function index()
@@ -16,6 +15,14 @@ class Dashboard extends CI_Controller {
             $this->load->view("admin/layout/dashboard_header.php");
             $this->load->view('admin/dashboard');
             $this->load->view('admin/layout/footer.php');
+            
+	}
+	public function user()
+	{  
+//            $data['message']  = "";
+            $this->load->view("user/layout/dashboard_header.php");
+            $this->load->view('user/dashboard');
+            $this->load->view('user/layout/footer.php');
             
 	}
 	

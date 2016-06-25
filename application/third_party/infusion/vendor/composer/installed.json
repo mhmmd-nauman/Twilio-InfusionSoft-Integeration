@@ -1,0 +1,50 @@
+[
+    {
+        "name": "infusionsoft/php-isdk",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/infusionsoft/PHP-iSDK.git",
+            "reference": "9525dc4aca8f9657719d54d43eea1043c5bd1abe"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/infusionsoft/PHP-iSDK/zipball/9525dc4aca8f9657719d54d43eea1043c5bd1abe",
+            "reference": "9525dc4aca8f9657719d54d43eea1043c5bd1abe",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "php": ">=5.2.0"
+        },
+        "time": "2014-01-25 14:10:40",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "classmap": [
+                "src/isdk.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Infusionsoft",
+                "homepage": "https://developer.infusionsoft.com"
+            }
+        ],
+        "description": "The Official Infusionsoft API PHP SDK",
+        "homepage": "https://developer.infusionsoft.com",
+        "keywords": [
+            "api",
+            "infusion",
+            "infusionsoft",
+            "infusionsoft-api",
+            "marketing",
+            "php-infusionsoft-api"
+        ]
+    }
+]

@@ -1,5 +1,17 @@
 <link href="<?php echo base_url('css/adminlog.css'); ?>" rel="stylesheet">
 <div class="login-page">
+    <?php
+    if ($this->session->userdata('sess_ci_admin_msg_type') == 'error') {
+        ?>
+    <div class="alert alert-danger">
+        <strong>Error!</strong> <?php echo $this->session->userdata('sess_ci_admin_msg');?>
+    </div>
+    <?php 
+     $this->session->set_userdata(array(
+        'sess_ci_admin_msg' => "",
+        'sess_ci_admin_msg_type' => ''
+    ));
+    } ?>
 <?php      
 $attributes = array('class' => 'login-form', 'method' => 'post','onsubmit'=>'return Validate(this);');
 echo form_open('login_ctrl/dologin',$attributes);

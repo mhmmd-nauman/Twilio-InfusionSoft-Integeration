@@ -1,0 +1,71 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+    ],
+    "hash": "fc892817d11a5ebc9e808ca820188892",
+    "packages": [
+        {
+            "name": "infusionsoft/php-isdk",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/infusionsoft/PHP-iSDK.git",
+                "reference": "9525dc4aca8f9657719d54d43eea1043c5bd1abe"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/infusionsoft/PHP-iSDK/zipball/9525dc4aca8f9657719d54d43eea1043c5bd1abe",
+                "reference": "9525dc4aca8f9657719d54d43eea1043c5bd1abe",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/isdk.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Infusionsoft",
+                    "homepage": "https://developer.infusionsoft.com"
+                }
+            ],
+            "description": "The Official Infusionsoft API PHP SDK",
+            "homepage": "https://developer.infusionsoft.com",
+            "keywords": [
+                "api",
+                "infusion",
+                "infusionsoft",
+                "infusionsoft-api",
+                "marketing",
+                "php-infusionsoft-api"
+            ],
+            "time": "2014-01-25 14:10:40"
+        }
+    ],
+    "packages-dev": [
+
+    ],
+    "aliases": [
+
+    ],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "infusionsoft/php-isdk": 20
+    },
+    "platform": [
+
+    ],
+    "platform-dev": [
+
+    ]
+}
