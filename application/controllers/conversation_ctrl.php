@@ -16,42 +16,51 @@ class Conversation_ctrl extends CI_Controller {
 	
     public function index()
     {  
-        $this->data['setting'] = $this->conversation_model->getConversation();
+        $this->data['list'] = $this->conversation_model->getConversation();
+        //print_r($this->data['setting']);
+        $this->load->view("admin/layout/dashboard_header.php");
+        $this->load->view('admin/conversation/conversations_list',$this->data);
+        $this->load->view('admin/layout/footer.php');
+    }
+    
+    public function add_new()
+    {  
+        //$this->data['setting'] = $this->conversation_model->getConversation();
+        //print_r($this->data['setting']);
+        $this->load->view("admin/layout/dashboard_header.php");
+        $this->load->view('admin/conversation/conversations_new');
+        $this->load->view('admin/layout/footer.php');
+    }               
+    public function load_con($con_id)
+    {  
+        $setting = $this->conversation_model->getConversation($con_id);
+        $this->data['setting'] = $setting[0];
         //print_r($this->data['setting']);
         $this->load->view("admin/layout/dashboard_header.php");
         $this->load->view('admin/conversation/conversations',$this->data);
         $this->load->view('admin/layout/footer.php');
-    }
-                   
-           
+    }        
 	
-    public function save_setting()
+    public function save_setting($con_id = false)
     { 
         $this->form_validation->set_rules('first_reply_name', 'First Reply: Name Capture', 'required');
         $this->form_validation->set_rules('second_reply_email', 'Second Reply: Email Capture', 'required');
         $this->form_validation->set_rules('third_reply_thanks', 'Third Reply: Thank You', 'required');
+        $this->form_validation->set_rules('keyword', 'KeyWord', 'required');
+        $this->form_validation->set_rules('Apply_Tag', 'Tag', 'required');
         if ($this->form_validation->run() == FALSE) {
             
-            $this->data['status'] = " Validation Errors";
+            $this->data['error'] = " Validation Errors - Please Fill all fields";
         
         } else {
-          
-            $settings=array
-            (
-            'first_reply_name'  =>$this->input->post('first_reply_name'),
-            'second_reply_email'  =>$this->input->post('second_reply_email'),
-            'third_reply_thanks'  =>$this->input->post('third_reply_thanks'),
-            
-            );
-            $this->db->where('id', 1);
-            $this->db->update('conversations', $settings);
-
-            $this->data['status'] = " Setting saved";
-            
+            $conversationID = $this->conversation_model->create($_POST,$con_id);
+            $this->data['status'] = " Conversation saved"; 
         }
-        $this->data['setting'] = $this->conversation_model->getConversation();
-        $this->load->view("admin/layout/dashboard_header.php");
-        $this->load->view('admin/conversation/conversations',$this->data);
-        $this->load->view('admin/layout/footer.php');
+        $this->index();
+    }
+    public function del_conversation($con_id){
+        $this->conversation_model->delete($con_id);
+        $this->data['status'] = " Conversation deleted"; 
+        $this->index();
     }
 }

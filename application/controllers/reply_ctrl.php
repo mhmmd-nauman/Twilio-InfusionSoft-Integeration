@@ -40,74 +40,89 @@ class Reply_ctrl extends CI_Controller {
     public function index()
     {  
         
-        $phone   = $_REQUEST['From'] ;
-        $message = $_REQUEST['Body'] ;
-        $this->data['conversation'] = $this->conversation_model->getConversation();
-        $this->data['contact'] = $this->contact_model->get_single_contact($phone);
-        if(empty($this->data['contact'])){
-            $this->contact_model->add(array("phone"=>$phone));
-            $this->data['message'] = $this->data['conversation']->first_reply_name;
-            $this->load->view('admin/conversation/reply_messages.php',$this->data);
-            exit();
-        }
-        if(empty($this->data['contact']->first_name)){
-            // first reply needs to be sent
-            $this->contact_model->update($this->data['contact']->id,array("first_name"=>$message));
-            $this->data['message'] = $this->data['conversation']->second_reply_email;
-           
-        }elseif (empty($this->data['contact']->email)) {
-            // second reply needs to be sent
-            $this->contact_model->update($this->data['contact']->id,array("email"=>$message));
-            $this->data['message'] = $this->data['conversation']->third_reply_thanks;
-            // process infusion soft
-            $app = new iSDK;
-            if ($app->cfgCon("connectionName")) {
-                $email = $message;
-                $returnFields = array('Id');
-                $data = $app->findByEmail($email, $returnFields);
-                $conID = $data[0]['Id'];
-                if(empty($conID)){
-                    // create new contact
-                    $contactData = array('FirstName' => $this->data['contact']->first_name,
-                    //'LastName'  => 'Doe',
-                    'Email'     => $email);
-                    $conID = $app->addCon($contactData);
-                    // apply the infusion soft tag 1677
-                    
-                    $app->grpAssign($conID, $this->data['setting']->Apply_Tag);
-                } else {
-                    // only apply the tag 1677
-                    $app->grpAssign($conID, $this->data['setting']->Apply_Tag);
-                }
-            }
-            
-            
-            //AddTag($ContactId, $TagId)
-            //getContactTags
-        } else{
-            //$infObject = new iNFUSION();
-            //$contacts = $infObject->getContactDetailsNew(array('Email' => 'martin@creativeavenue.co.uk'),0);
-           // $id = $infObject->AddContact(array("Email"=>'mhmmd.nauman@gmail.com',"FirstName"=>"Muhammad"));
-            //$infusionsoft = new Infusionsoft();
-            //$infusionsoft->refreshAccessToken();
-            //$id = $infusionsoft->contacts()->add(array("Email"=>'mhmmd.nauman@gmail.com',"FirstName"=>"Muhammad"));
-            //print($id);
-            foreach ($contacts as $contact) {
-                $data = array();
+        $phone   = $_REQUEST['From'];
+        $message = trim($_REQUEST['Body']);
+        //$message =  "TEST wow";
+        $message_array = explode(" ", $message);
+        $conversation_array = $this->conversation_model->findConversation($message_array[0]);
+        if($conversation_array){
+            $this->data['conversation'] = $conversation_array[0];
+        
+            $this->data['contact'] = $this->contact_model->get_single_contact($phone,$conversation_array[0]->id);
+        
+            if(empty($this->data['contact'])){
+                $this->contact_model->add(array("phone"=>$phone,
+                                                "con_id"=>$conversation_array[0]->id,
+                                                "added_on"=>date("Y-m-d")));
+                $this->data['message'] = $this->data['conversation']->first_reply_name;
+                //$this->load->view('admin/conversation/reply_messages.php',$this->data);
 
-                $data['inf_id'] = $contact->Id;
-                $data['first_name'] = $contact->FirstName;
-                $data['email'] = $contact->Email;
-                $data['phone'] = $contact->Phone1;
-                //$this->db->insert('contacts', $data);
+            }elseif(empty($this->data['contact']->first_name)){
+                // first reply needs to be sent
+                $conversation_array = $this->conversation_model->getConversation($this->data['contact']->con_id);
+                $this->data['conversation'] = $conversation_array[0];
+
+                $this->contact_model->update($this->data['contact']->id,array("first_name"=>$message));
+                $this->data['message'] = $this->data['conversation']->second_reply_email;
+
+            }elseif (empty($this->data['contact']->email)) {
+                // second reply needs to be sent
+                $conversation_array = $this->conversation_model->getConversation($this->data['contact']->con_id);
+                $this->data['conversation'] = $conversation_array[0];
+                $this->contact_model->update($this->data['contact']->id,array("email"=>$message));
+                $this->data['message'] = $this->data['conversation']->third_reply_thanks;
+                // process infusion soft
+                $app = new iSDK;
+                if ($app->cfgCon("connectionName")) {
+                    $email = $message;
+                    $returnFields = array('Id');
+                    $data = $app->findByEmail($email, $returnFields);
+                    $conID = $data[0]['Id'];
+                    if(empty($conID)){
+                        // create new contact
+                        $contactData = array('FirstName' => $this->data['contact']->first_name,
+                        //'LastName'  => 'Doe',
+                        'Email'     => $email);
+                        $conID = $app->addCon($contactData);
+                        // apply the infusion soft tag 1677
+                         $this->contact_model->update($this->data['contact']->id,array("inf_id"=>$conID,"tag"=>$this->data['conversation']->Apply_Tag));
+                        $app->grpAssign($conID, $this->data['conversation']->Apply_Tag);
+                    } else {
+                        // only apply the tag 1677
+                        $this->contact_model->update($this->data['contact']->id,array("inf_id"=>$conID,"tag"=>$this->data['conversation']->Apply_Tag));
+                        $app->grpAssign($conID, $this->data['conversation']->Apply_Tag);
+                    }
+                }
+
+
+                //AddTag($ContactId, $TagId)
+                //getContactTags
+            } else{
+                //$infObject = new iNFUSION();
+                //$contacts = $infObject->getContactDetailsNew(array('Email' => 'martin@creativeavenue.co.uk'),0);
+               // $id = $infObject->AddContact(array("Email"=>'mhmmd.nauman@gmail.com',"FirstName"=>"Muhammad"));
+                //$infusionsoft = new Infusionsoft();
+                //$infusionsoft->refreshAccessToken();
+                //$id = $infusionsoft->contacts()->add(array("Email"=>'mhmmd.nauman@gmail.com',"FirstName"=>"Muhammad"));
+                //print($id);
+                //foreach ($contacts as $contact) {
+                    //$data = array();
+
+                    //$data['inf_id'] = $contact->Id;
+                    //$data['first_name'] = $contact->FirstName;
+                    //$data['email'] = $contact->Email;
+                    //$data['phone'] = $contact->Phone1;
+                    //$this->db->insert('contacts', $data);
+                //}
+                $this->data['message'] ="done";
             }
-            $this->data['message'] ="done";
+        }else{
+            $this->data['message'] ="Invalid Code Received";
         }
         
-        /*
         header("content-type: text/xml");
         echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        */
+        
         $this->load->view('admin/conversation/reply_messages.php',$this->data);
         
     }

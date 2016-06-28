@@ -5,12 +5,20 @@ class Contact_model extends CI_Model
         parent::__construct();
       	$this->load->database();
     }
-    public function get_single_contact($phone)
+    public function get_single_contact($phone,$con_id=0)
     {
-        $querydb1 = $this->db->select('*')->from("contacts")->where('phone',$phone);
-        $querydb = $querydb1->get();
-        $result = $querydb->result();
-        return $result[0];
+        $querydb1 = $this->db->select('*')->from("contacts")
+                ->where('phone',$phone)
+                ->where('date(added_on)', date("Y-m-d"))
+                ->where('con_id', $con_id);
+        
+        $q = $querydb1->get();
+        if( $q->num_rows() > 0 ) {
+            $result = $q->result();
+            return $result[0];
+        } else {
+            return false;
+        }   
     }
        
     function contact_list()
